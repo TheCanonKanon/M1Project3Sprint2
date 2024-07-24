@@ -1,0 +1,9 @@
+.card-holder {
+    display: flexbox;
+}
+
+.card {
+    max-width: 300;
+    max-height: 300;
+    border: 2px;
+}
