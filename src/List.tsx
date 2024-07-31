@@ -5,32 +5,18 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';
 import { Button, Container } from "react-bootstrap";
-import Image from 'react-bootstrap/Image';
+import Fetch from "./fetch";
+
+
+export interface SWData {
+  id: number;
+  name: string;
+  image: string;
+  details: string;
+}
+
 
 function List() {
-
-  //fetching the Lists from SWAPI
-  async function fetchAPI (page: number, categorySelectValue: string, limit: number) {
-    const fetchSW = await fetch(`https://starwars-databank-server.vercel.app/api/v1/${categorySelectValue}?page=${page}&limit=${limit}`)
-    const SWData = await fetchSW.json();
-    const cardio:CardsInfos[] =[]
-    for (let x of SWData.data) {
-      let y= 0;
-        cardio.push({
-          id: x._id,
-          name: x.name,
-          image: x.image,
-        })
-        y++;
-    }
-    return cardio;
-  }
-
-  interface CardsInfos {
-    id: number;
-    name: string;
-    image: string;
-  }
 
   function handleCatergorySelect(category : string) {
     setpage(1);
@@ -47,17 +33,68 @@ function List() {
 
   const [page, setpage] = useState<number>(1);
   const [categorySelect, setcategorySelect] = useState<string>(useRef("characters").current)
-  const [cards, setCards] = useState<CardsInfos[]>();
+  const [cards, setCards] = useState<SWData[]>();
+  const [preCards, setPreCards] = useState<SWData[]>();
   const [resultLimit, setResultLimit] = useState<number>(10)
+  //Array mit 0. Characters(SWData), 1. Creatures(Promise<SWData>), 2. Droids(Promise<SWData>), 3. Locations(Promise<SWData>), 4. Organizations(Promise<SWData>), 5. Species(Promise<SWData>), 6. Vehicles(Promise<SWData>) 
+  const [swData, setSWData] = useState<SWData[][]>();
 
 
   useEffect(() => {
-    setCards(undefined);
-    fetchAPI(page,categorySelect,resultLimit).then(e => setCards(e))
-    
-
+    //Array mit 0. Characters(SWData), 1. Creatures(Promise<SWData>), 2. Droids(Promise<SWData>), 3. Locations(Promise<SWData>), 4. Organizations(Promise<SWData>), 5. Species(Promise<SWData>), 6. Vehicles(Promise<SWData>) 
+    Fetch().then(e => (setSWData(e)))
     return () => {}
-  }, [page,categorySelect,resultLimit])
+  }, [])
+
+  useEffect(() => {
+    setPreCards(undefined)
+    if (swData != undefined) {
+      //filter Catergory
+      switch (categorySelect) {
+        case "characters":
+          setPreCards(swData[0])
+          break;
+        case "creatures":
+          setPreCards(swData[1])
+          break;
+        case "droids":
+          setPreCards(swData[2])
+          break;
+        case "locations":
+          setPreCards(swData[3])
+          break;
+        case "organizations":
+          setPreCards(swData[4])
+          break;
+        case "species":
+          setPreCards(swData[5])
+          break;
+        case "vehicles":
+          setPreCards(swData[6])
+          break;
+        case "all":
+          const cardend:SWData[] = []
+          for(let x of swData) {
+            cardend.concat(x)
+          }
+          setPreCards(cardend);
+          break;
+      }
+
+      //filter searchbar
+      
+      /* if(searchbar != null) {
+        preCards?.filter((word) => word.name.toLocaleLowerCase().includes(searchbar.toLocaleLowerCase())
+      } */
+      
+
+
+      //filter page/results per Page
+      setCards(preCards?.slice((page-1)*resultLimit, (page*resultLimit)-1));
+      console.log(cards,preCards);
+    }
+
+  },[categorySelect,page,resultLimit])
     
 
 
@@ -89,6 +126,7 @@ function List() {
             <option value={"organizations"}>Organizations</option>
             <option value={"species"}>Species</option>
             <option value={"vehicles"}>Vehicles</option>
+            <option value={"all"}></option>
           </Form.Select>
             </Col>
             <Col>
