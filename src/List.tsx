@@ -19,87 +19,89 @@ export interface SWData {
 function List() {
 
   function handleCatergorySelect(category : string) {
-    setpage(1);
+    setPage(1);
     setcategorySelect(category);
   }
 
-  function handlePageChange(pageN: number) {
-    setpage(pageN);
+  function handlePageChange(pageN: string) {
+    if (pageN === "prev"){
+      setPage(page-1)
+    } else if(pageN === "next") {
+      setPage(page+1)
+    }
   }
 
   function handlePageResultChange(pageResultChange: number) {
+    setPage(1);
     setResultLimit(pageResultChange);
   }
 
-  const [page, setpage] = useState<number>(1);
+  function handleUserSearch (searchWord: string | null) {
+      setSearchString(searchWord);
+      console.log(searchString);
+  }
+
+  const [page, setPage] = useState<number>(1);
   const [categorySelect, setcategorySelect] = useState<string>(useRef("characters").current)
-  const [cards, setCards] = useState<SWData[]>();
-  const [preCards, setPreCards] = useState<SWData[]>();
   const [resultLimit, setResultLimit] = useState<number>(10)
   //Array mit 0. Characters(SWData), 1. Creatures(Promise<SWData>), 2. Droids(Promise<SWData>), 3. Locations(Promise<SWData>), 4. Organizations(Promise<SWData>), 5. Species(Promise<SWData>), 6. Vehicles(Promise<SWData>) 
   const [swData, setSWData] = useState<SWData[][]>();
+  const [searchString, setSearchString] = useState<string|null>(null);
 
 
   useEffect(() => {
     //Array mit 0. Characters(SWData), 1. Creatures(Promise<SWData>), 2. Droids(Promise<SWData>), 3. Locations(Promise<SWData>), 4. Organizations(Promise<SWData>), 5. Species(Promise<SWData>), 6. Vehicles(Promise<SWData>) 
-    Fetch().then(e => (setSWData(e)))
+    Fetch().then(e => (setSWData(e)));
     return () => {}
   }, [])
 
-  useEffect(() => {
-    setPreCards(undefined)
-    if (swData != undefined) {
-      //filter Catergory
-      switch (categorySelect) {
-        case "characters":
-          setPreCards(swData[0])
-          break;
-        case "creatures":
-          setPreCards(swData[1])
-          break;
-        case "droids":
-          setPreCards(swData[2])
-          break;
-        case "locations":
-          setPreCards(swData[3])
-          break;
-        case "organizations":
-          setPreCards(swData[4])
-          break;
-        case "species":
-          setPreCards(swData[5])
-          break;
-        case "vehicles":
-          setPreCards(swData[6])
-          break;
-        case "all":
-          const cardend:SWData[] = []
-          for(let x of swData) {
-            cardend.concat(x)
-          }
-          setPreCards(cardend);
-          break;
-      }
-
-      //filter searchbar
-      
-      /* if(searchbar != null) {
-        preCards?.filter((word) => word.name.toLocaleLowerCase().includes(searchbar.toLocaleLowerCase())
-      } */
-      
-
-
-      //filter page/results per Page
-      setCards(preCards?.slice((page-1)*resultLimit, (page*resultLimit)-1));
-      console.log(cards,preCards);
-    }
-
-  },[categorySelect,page,resultLimit])
+  let preCards:SWData[] = [];
+  if (swData != undefined) {
     
+    //filter Catergory
+    switch (categorySelect) {
+      case "characters":
+        preCards = preCards.concat(swData[0])
+        break;
+      case "creatures":
+        preCards = preCards.concat(swData[1])
+        break;
+      case "droids":
+        preCards = preCards.concat(swData[2])
+        break;
+      case "locations":
+        preCards = preCards.concat(swData[3])
+        break;
+      case "organizations":
+        preCards = preCards.concat(swData[4])
+        break;
+      case "species":
+        preCards = preCards.concat(swData[5])
+        break;
+      case "vehicles":
+        preCards = preCards.concat(swData[6])
+        break;
+      case "all":
+        let cardend:SWData[] = []
+        for(let x of swData) {
+          cardend = cardend.concat(x)
+        }
+        preCards = preCards.concat(cardend);
+        break;
+    } 
+    if (searchString !== null) {   
+      preCards = preCards.filter((word) => word.name.toLowerCase().includes(searchString.toLowerCase()));
+    }
+  }
+  //filter page/results per Page
+  const cards:SWData[] = preCards?.slice((page-1)*resultLimit, (page*resultLimit));
+
 
 
   return (
     <Container fluid>
+      <input type="text" onChange={e => {handleUserSearch(e.target.value)}}></input>
+
       <Row xs={1} sm="auto">
         {cards?.map((x,idx) => (
           <Col key={idx}>
@@ -115,7 +117,7 @@ function List() {
 
           <Row className="rowed" style={{margin: "auto"}}>
             <Col>
-            <Button className="button">prev</Button>
+            <Button className="button" value={"prev"} onClick={e => {handlePageChange(e.currentTarget.value)}} disabled={page<=1}>prev</Button>
             </Col>
             <Col>
             <Form.Select id="category" onChange={e => {handleCatergorySelect(e.target.value)}} className="selected">
@@ -126,11 +128,11 @@ function List() {
             <option value={"organizations"}>Organizations</option>
             <option value={"species"}>Species</option>
             <option value={"vehicles"}>Vehicles</option>
-            <option value={"all"}></option>
+            <option value={"all"}>All</option>
           </Form.Select>
             </Col>
             <Col>
-            <Button className="buttoned">next</Button>
+            <Button className="buttoned" value={"next"} onClick={e => {handlePageChange(e.currentTarget.value)}} disabled={page*resultLimit>=preCards.length}>next</Button>
             </Col>
           </Row>
           
@@ -146,6 +148,6 @@ function List() {
 
 export default List
 
-
-
-
+function pageButtons(params:type) {
+  
+}
