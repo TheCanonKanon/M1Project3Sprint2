@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef} from 'react'
-import './List.css'
+import '../css/List.css'
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';
 import { Button, Container } from "react-bootstrap";
-import Fetch from "./fetch";
+import Fetch from "../fetch";
 
 
 export interface SWData {
@@ -37,8 +37,8 @@ function List() {
   }
 
   function handleUserSearch (searchWord: string | null) {
-      setSearchString(searchWord);
-      console.log(searchString);
+    setPage(1);
+    setSearchString(searchWord);
   }
 
   const [page, setPage] = useState<number>(1);

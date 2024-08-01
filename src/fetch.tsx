@@ -1,4 +1,4 @@
-import { SWData } from "./List";
+import { SWData } from "./pages/List";
 
 
 export default async function Fetch() {
