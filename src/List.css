@@ -1,9 +1,23 @@
-.card-holder {
-    display: flexbox;
+.croped {
+    width: 350px;
+    overflow: hidden;
 }
 
-.card {
-    max-width: 300;
-    max-height: 300;
-    border: 2px;
+.croped .imged {
+    width: auto;
+    height: 300px;
+}
+
+.selected {
+    max-width: 200px;
+    min-width: 200px;
+    margin: auto;
+}
+
+.buttoned {
+    margin: auto;
+}
+
+.rowed {
+    max-width: fit-content;
 }
