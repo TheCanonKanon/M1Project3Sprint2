@@ -5,7 +5,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';
 import { Button, Container } from "react-bootstrap";
-import Fetch from "../fetch";
+import { useLoaderData } from "react-router-dom";
 
 
 export interface SWData {
@@ -16,7 +16,9 @@ export interface SWData {
 }
 
 
-function List() {
+export default function List() {
+
+  const swdata:any = useLoaderData();
 
   function handleCatergorySelect(category : string) {
     setPage(1);
@@ -48,12 +50,13 @@ function List() {
   const [swData, setSWData] = useState<SWData[][]>();
   const [searchString, setSearchString] = useState<string|null>(null);
 
-
+  
   useEffect(() => {
     //Array mit 0. Characters(SWData), 1. Creatures(Promise<SWData>), 2. Droids(Promise<SWData>), 3. Locations(Promise<SWData>), 4. Organizations(Promise<SWData>), 5. Species(Promise<SWData>), 6. Vehicles(Promise<SWData>) 
-    Fetch().then(e => (setSWData(e)));
+    setSWData(swdata)
     return () => {}
   }, [])
+
 
   let preCards:SWData[] = [];
   if (swData != undefined) {
@@ -144,10 +147,4 @@ function List() {
           </Form.Select>
     </Container>
   )
-}
-
-export default List
-
-function pageButtons(params:type) {
-  
 }
