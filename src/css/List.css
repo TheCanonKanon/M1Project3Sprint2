@@ -7,17 +7,3 @@
     width: auto;
     height: 300px;
 }
-
-.selected {
-    max-width: 200px;
-    min-width: 200px;
-    margin: auto;
-}
-
-.buttoned {
-    margin: auto;
-}
-
-.rowed {
-    max-width: fit-content;
-}

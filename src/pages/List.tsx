@@ -26,7 +26,7 @@ export default function List() {
   const [resultLimit, setResultLimit] = useState<number>(10)
   //Array mit 0. Characters(SWData), 1. Creatures(Promise<SWData>), 2. Droids(Promise<SWData>), 3. Locations(Promise<SWData>), 4. Organizations(Promise<SWData>), 5. Species(Promise<SWData>), 6. Vehicles(Promise<SWData>) 
   const [swData, setSWData] = useState<SWData[][]>();
-  const [searchString, setSearchString] = useState<string|null>(null);
+  const [searchString, setSearchString] = useState<string>("");
 
   
   //Session Storage----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -93,11 +93,11 @@ export default function List() {
     sessionStorage.setItem("savedResultLimit", String(pageResultChange))
   }
 
-  function handleUserSearch (searchWord: string | null) {
+  function handleUserSearch (searchWord: string) {
     setPage(1);
     setSearchString(searchWord);
     sessionStorage.setItem("savedPage", String(1))
-    if (searchString !== null) {
+    if (searchWord !== null) {
       sessionStorage.setItem("savedsearchString", searchWord)
     } 
   }
@@ -146,9 +146,9 @@ export default function List() {
 
 
   return (
-    <Container fluid>
+    <Container>
       <Row>
-        <Col style={{margin: "1rem 25%", maxWidth: "50%"}}>
+        <Col style={{margin: "1rem"}}>
           <Form.Label htmlFor="searchBar">Search:</Form.Label>
           <Form.Control id="searchBar" type="text" value={searchString} onChange={e => {handleUserSearch(e.target.value)}}/>
         </Col>
@@ -166,33 +166,37 @@ export default function List() {
         ))}
         </Row>
 
-          <Row className="rowed" style={{margin: "auto"}}>
+          <Row className="justify-content-md-center" xs="auto">
             <Col>
-            <Button className="button" value={"prev"} onClick={e => {handlePageChange(e.currentTarget.value)}} disabled={page<=1}>prev</Button>
+              <Button value={"prev"} onClick={e => {handlePageChange(e.currentTarget.value)}} disabled={page<=1}>prev</Button>
             </Col>
             <Col>
-            <Form.Select id="category" value={categorySelect} onChange={e => {handleCatergorySelect(e.target.value)}} className="selected">
-            <option value={"characters"}>Character</option>
-            <option value={"creatures"}>Creatures</option>
-            <option value={"droids"}>Droids</option>
-            <option value={"locations"}>Locations</option>
-            <option value={"organizations"}>Organizations</option>
-            <option value={"species"}>Species</option>
-            <option value={"vehicles"}>Vehicles</option>
-            <option value={"all"}>All</option>
-          </Form.Select>
+              <Form.Select id="category" value={categorySelect} onChange={e => {handleCatergorySelect(e.target.value)}}>
+                <option value={"characters"}>Character</option>
+                <option value={"creatures"}>Creatures</option>
+                <option value={"droids"}>Droids</option>
+                <option value={"locations"}>Locations</option>
+                <option value={"organizations"}>Organizations</option>
+                <option value={"species"}>Species</option>
+                <option value={"vehicles"}>Vehicles</option>
+                <option value={"all"}>All</option>
+              </Form.Select>
             </Col>
             <Col>
-            <Button className="buttoned" value={"next"} onClick={e => {handlePageChange(e.currentTarget.value)}} disabled={page*resultLimit>=preCards.length}>next</Button>
+              <Button value={"next"} onClick={e => {handlePageChange(e.currentTarget.value)}} disabled={page*resultLimit>=preCards.length}>next</Button>
             </Col>
           </Row>
-          
-
-          <Form.Select id="pageResult" value={resultLimit} onChange={e => {handlePageResultChange(Number(e.target.value))}} className="selected">
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={100}>100</option>
-          </Form.Select>
+          <Row xs="auto" style={{justifyContent: "center"}}>
+            <Col></Col>
+            <Col>
+              <Form.Select id="pageResult" value={resultLimit} onChange={e => {handlePageResultChange(Number(e.target.value))}}>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={100}>100</option>
+              </Form.Select>
+            </Col>
+            <Col></Col>
+          </Row>
     </Container>
   )
 }
