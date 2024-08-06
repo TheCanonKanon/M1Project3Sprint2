@@ -34,7 +34,7 @@ export default function Detail () {
 
 
     return (
-    <Container>
+    <Container style={{margin: "1rem auto"}}>
       <Row>
         <Col>
           <Image src={detailPage.image} fluid />

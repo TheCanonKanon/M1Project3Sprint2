@@ -1,7 +1,7 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, NavLink } from "react-router-dom";
 import Fetch from "../fetch";
 import { createContext } from "react";
 
@@ -11,7 +11,7 @@ export default function Root () {
 
     return (
     <>
-        <Navbar expand="lg" className="bg-body-tertiary">
+        <Navbar expand="lg" className="bg-body-tertiary" bg="dark" data-bs-theme="dark">
         <Container>
             <Navbar.Brand>Star Wars Database</Navbar.Brand>
             <br></br>

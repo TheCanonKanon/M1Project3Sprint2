@@ -147,8 +147,12 @@ export default function List() {
 
   return (
     <Container fluid>
-      <input type="text" value={searchString} onChange={e => {handleUserSearch(e.target.value)}}></input>
-
+      <Row>
+        <Col style={{margin: "1rem 25%", maxWidth: "50%"}}>
+          <Form.Label htmlFor="searchBar">Search:</Form.Label>
+          <Form.Control id="searchBar" type="text" value={searchString} onChange={e => {handleUserSearch(e.target.value)}}/>
+        </Col>
+      </Row>
       <Row xs={1} sm="auto">
         {cards?.map((x,idx) => (
           <Col key={idx}>
