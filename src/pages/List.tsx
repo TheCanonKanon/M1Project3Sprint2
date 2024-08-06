@@ -1,15 +1,16 @@
-import { useState, useEffect, useRef} from 'react'
+import { useState, useEffect, useRef, useContext} from 'react'
 import '../css/List.css'
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';
 import { Button, Container } from "react-bootstrap";
-import { useLoaderData } from "react-router-dom";
+import { swdataContext } from "./root";
+import { Link } from "react-router-dom";
 
 
 export interface SWData {
-  id: number;
+  id: string;
   name: string;
   image: string;
   details: string;
@@ -18,30 +19,7 @@ export interface SWData {
 
 export default function List() {
 
-  const swdata:any = useLoaderData();
-
-  function handleCatergorySelect(category : string) {
-    setPage(1);
-    setcategorySelect(category);
-  }
-
-  function handlePageChange(pageN: string) {
-    if (pageN === "prev"){
-      setPage(page-1)
-    } else if(pageN === "next") {
-      setPage(page+1)
-    }
-  }
-
-  function handlePageResultChange(pageResultChange: number) {
-    setPage(1);
-    setResultLimit(pageResultChange);
-  }
-
-  function handleUserSearch (searchWord: string | null) {
-    setPage(1);
-    setSearchString(searchWord);
-  }
+  const swdata:any = useContext(swdataContext)
 
   const [page, setPage] = useState<number>(1);
   const [categorySelect, setcategorySelect] = useState<string>(useRef("characters").current)
@@ -51,11 +29,78 @@ export default function List() {
   const [searchString, setSearchString] = useState<string|null>(null);
 
   
+  //Session Storage----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  const pageSessionString:string | null = sessionStorage.getItem("savedPage")
+  let pageSession:number | null = null;
+  if (pageSessionString !== null) {
+    pageSession = +pageSessionString;
+  }
+  const resultLimitSessionString:string | null = sessionStorage.getItem("savedResultLimit")
+  let resultLimitSession:number | null = null;
+  if (resultLimitSessionString !== null) {
+    resultLimitSession = +resultLimitSessionString;
+  }
+  const categorySelectSession:string | null = sessionStorage.getItem("savedCategorySelect")
+  const searchStringSession:string | null = sessionStorage.getItem("savedsearchString")
+
+
   useEffect(() => {
     //Array mit 0. Characters(SWData), 1. Creatures(Promise<SWData>), 2. Droids(Promise<SWData>), 3. Locations(Promise<SWData>), 4. Organizations(Promise<SWData>), 5. Species(Promise<SWData>), 6. Vehicles(Promise<SWData>) 
     setSWData(swdata)
+    
+    //setSessionStorage if not null
+    if(pageSession !== null) {
+      setPage(pageSession)
+    } 
+    if (resultLimitSession !== null) {
+      setResultLimit(resultLimitSession)
+    } 
+    if (categorySelectSession !== null) {
+      setcategorySelect(categorySelectSession)
+    } 
+    if (searchStringSession !== null) {
+      setSearchString(searchStringSession)
+    }
     return () => {}
   }, [])
+  
+
+
+  function handleCatergorySelect(category : string) {
+    setPage(1);
+    setcategorySelect(category);
+    sessionStorage.setItem("savedPage", String(1))
+    sessionStorage.setItem("savedCategorySelect", category)
+
+    setSearchString("");
+    sessionStorage.setItem("savedsearchString", "")
+  }
+
+  function handlePageChange(pageN: string) {
+    if (pageN === "prev"){
+      setPage(page-1)
+      sessionStorage.setItem("savedPage", String(page-1))
+    } else if(pageN === "next") {
+      setPage(page+1)
+      sessionStorage.setItem("savedPage", String(page+1))
+    }
+  }
+
+  function handlePageResultChange(pageResultChange: number) {
+    setPage(1);
+    setResultLimit(pageResultChange);
+    sessionStorage.setItem("savedPage", String(1))
+    sessionStorage.setItem("savedResultLimit", String(pageResultChange))
+  }
+
+  function handleUserSearch (searchWord: string | null) {
+    setPage(1);
+    setSearchString(searchWord);
+    sessionStorage.setItem("savedPage", String(1))
+    if (searchString !== null) {
+      sessionStorage.setItem("savedsearchString", searchWord)
+    } 
+  }
 
 
   let preCards:SWData[] = [];
@@ -100,16 +145,15 @@ export default function List() {
   const cards:SWData[] = preCards?.slice((page-1)*resultLimit, (page*resultLimit));
 
 
-
   return (
     <Container fluid>
-      <input type="text" onChange={e => {handleUserSearch(e.target.value)}}></input>
+      <input type="text" value={searchString} onChange={e => {handleUserSearch(e.target.value)}}></input>
 
       <Row xs={1} sm="auto">
         {cards?.map((x,idx) => (
           <Col key={idx}>
-            <Card className="croped">
-              <Card.Img src={x.image} alt={`Image of ${x.name}`} className="imged"/>
+            <Card className="croped" as={Link} to={`/details/${x.id}`}>
+              <Card.Img src={x.image} alt={`Image of ${x.name}`} className="imged" loading="lazy"/>
               <Card.Body>
                 <Card.Title>{x.name}</Card.Title>
               </Card.Body>
@@ -123,7 +167,7 @@ export default function List() {
             <Button className="button" value={"prev"} onClick={e => {handlePageChange(e.currentTarget.value)}} disabled={page<=1}>prev</Button>
             </Col>
             <Col>
-            <Form.Select id="category" onChange={e => {handleCatergorySelect(e.target.value)}} className="selected">
+            <Form.Select id="category" value={categorySelect} onChange={e => {handleCatergorySelect(e.target.value)}} className="selected">
             <option value={"characters"}>Character</option>
             <option value={"creatures"}>Creatures</option>
             <option value={"droids"}>Droids</option>
@@ -140,7 +184,7 @@ export default function List() {
           </Row>
           
 
-          <Form.Select id="pageResult" onChange={e => {handlePageResultChange(Number(e.target.value))}} className="selected">
+          <Form.Select id="pageResult" value={resultLimit} onChange={e => {handlePageResultChange(Number(e.target.value))}} className="selected">
             <option value={10}>10</option>
             <option value={25}>25</option>
             <option value={100}>100</option>
