@@ -1,7 +1,9 @@
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
+
+export function loginScript(email:string,password:string) {
 const auth = getAuth();
-signInWithEmailAndPassword(auth, email, password)
+const test = signInWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
     // Signed in 
     const user = userCredential.user;
@@ -11,3 +13,4 @@ signInWithEmailAndPassword(auth, email, password)
     const errorCode = error.code;
     const errorMessage = error.message;
   });
+}

@@ -1,7 +1,9 @@
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
+
+export function registerScript(email:string,password:string) {
 const auth = getAuth();
-createUserWithEmailAndPassword(auth, email, password)
+const test = createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
     // Signed up 
     const user = userCredential.user;
@@ -12,3 +14,4 @@ createUserWithEmailAndPassword(auth, email, password)
     const errorMessage = error.message;
     // ..
   });
+}

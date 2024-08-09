@@ -19,7 +19,7 @@ export interface SWData {
 
 export default function List() {
 
-  const swdata:any = useContext(swdataContext)
+  const swdata:SWData[][] = useContext(swdataContext)
 
   const [page, setPage] = useState<number>(1);
   const [categorySelect, setcategorySelect] = useState<string>(useRef("characters").current)
